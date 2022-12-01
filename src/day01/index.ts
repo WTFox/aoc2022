@@ -24,6 +24,9 @@ export default {
     return getMaxCalorieCount(readFileSync("src/day01/input.txt").toString())
   },
   partTwo: () => {
-    return
+    return countCaloriesPerElf(readFileSync("src/day01/input.txt").toString())
+      .sort((a, b) => a - b)
+      .slice(-3)
+      .reduce((acc, val) => acc + val, 0)
   },
 }
