@@ -1,18 +1,18 @@
 import { readFileSync } from "fs"
 
 export function countCaloriesPerElf(input: string): number[] {
-  let counts = [0]
+  const calorieCounts = [0]
   input
     .trim()
     .split("\n")
-    .forEach((value, _) => {
+    .forEach((value) => {
       if (!value.length) {
-        counts.push(0)
+        calorieCounts.push(0)
         return
       }
-      counts[counts.length - 1] += parseInt(value)
+      calorieCounts[calorieCounts.length - 1] += parseInt(value)
     })
-  return counts
+  return calorieCounts
 }
 
 export function getMaxCalorieCount(input: string): number {
@@ -27,6 +27,6 @@ export default {
     return countCaloriesPerElf(readFileSync("src/day01/input.txt").toString())
       .sort((a, b) => a - b)
       .slice(-3)
-      .reduce((acc, val) => acc + val, 0)
+      .reduce((totalCalories, calories) => totalCalories + calories, 0)
   },
 }

@@ -20,7 +20,11 @@ describe("day01", () => {
 
   test("countCaloriesPerElf", () => {
     expect(countCaloriesPerElf(input)).toEqual([
-      6000, 4000, 11000, 24000, 10000,
+      6000,
+      4000,
+      11000,
+      24000,
+      10000,
     ])
   })
 
