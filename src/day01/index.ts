@@ -1,6 +1,27 @@
+import { readFileSync } from "fs"
+
+export function countCaloriesPerElf(input: string): number[] {
+  let counts = [0]
+  input
+    .trim()
+    .split("\n")
+    .forEach((value, _) => {
+      if (!value.length) {
+        counts.push(0)
+        return
+      }
+      counts[counts.length - 1] += parseInt(value)
+    })
+  return counts
+}
+
+export function getMaxCalorieCount(input: string): number {
+  return Math.max(...countCaloriesPerElf(input))
+}
+
 export default {
   partOne: () => {
-    return
+    return getMaxCalorieCount(readFileSync("src/day01/input.txt").toString())
   },
   partTwo: () => {
     return
