@@ -8,64 +8,50 @@ function range(start: string, end: string): number[] {
   return ans
 }
 
-export function countEntireOverlaps(input: string[]): number {
-  let count = 0
-  input.forEach((val) => {
-    if (!val) {
-      return
-    }
-    const [first, second] = val.split(",")
-    const firstRange = range(first!.split("-")[0]!, first!.split("-")[1]!)
-    const secondRange = range(second!.split("-")[0]!, second!.split("-")[1]!)
-
-    if (first === second) {
-      ++count
-      return
-    }
-
-    const largerArray =
-      firstRange.length > secondRange.length ? firstRange : secondRange
-    const smallerArray =
-      firstRange.length > secondRange.length ? secondRange : firstRange
-
-    count +=
-      largerArray.filter((val) => {
-        return [...smallerArray].includes(val)
-      }).length === smallerArray.length
-        ? 1
-        : 0
-  })
-  return count
+export function parseInput(val: string): {
+  firstRange: Set<number>
+  secondRange: Set<number>
+} {
+  const [first, second] = val.split(",")
+  const firstRange = new Set(
+    range(first!.split("-")[0]!, first!.split("-")[1]!)
+  )
+  const secondRange = new Set(
+    range(second!.split("-")[0]!, second!.split("-")[1]!)
+  )
+  return { firstRange, secondRange }
 }
 
-export function countOverlaps(input: string[]): number {
-  let count = 0
-  input.forEach((val) => {
-    if (!val) {
-      return
-    }
-    const [first, second] = val.split(",")
-    const firstRange = range(first!.split("-")[0]!, first!.split("-")[1]!)
-    const secondRange = range(second!.split("-")[0]!, second!.split("-")[1]!)
-
-    if (first === second) {
-      ++count
-      return
-    }
-
-    const largerArray =
-      firstRange.length > secondRange.length ? firstRange : secondRange
-    const smallerArray =
-      firstRange.length > secondRange.length ? secondRange : firstRange
-
-    count +=
-      largerArray.filter((val) => {
-        return [...smallerArray].includes(val)
-      }).length > 0
+export function countEntireOverlaps(input: string[]): number {
+  return input
+    .map((val) => {
+      if (!val) {
+        return 0
+      }
+      const { firstRange, secondRange } = parseInput(val)
+      const intersects = new Set(
+        [...new Set(firstRange)].filter((x) => new Set(secondRange).has(x))
+      )
+      return [firstRange.size, secondRange.size].includes(intersects.size)
         ? 1
         : 0
-  })
-  return count
+    })
+    .reduce((acc, val) => (acc += val), 0)
+}
+
+export function countPartialOverlaps(input: string[]): number {
+  return input
+    .map((val) => {
+      if (!val) {
+        return 0
+      }
+      const { firstRange, secondRange } = parseInput(val)
+      const intersects = new Set(
+        [...new Set(firstRange)].filter((x) => new Set(secondRange).has(x))
+      )
+      return intersects.size > 0 ? 1 : 0
+    })
+    .reduce((acc, val) => (acc += val), 0)
 }
 
 export default {
@@ -75,7 +61,7 @@ export default {
     )
   },
   partTwo: () => {
-    return countOverlaps(
+    return countPartialOverlaps(
       readFileSync("src/day04/input.txt", "utf8").toString().split("\n")
     )
   },

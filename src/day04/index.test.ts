@@ -1,4 +1,4 @@
-import { countEntireOverlaps, countOverlaps } from "."
+import { countEntireOverlaps, countPartialOverlaps } from "."
 
 describe("day04", () => {
   const testInput = `\
@@ -17,6 +17,6 @@ describe("day04", () => {
   })
 
   test("part 2", () => {
-    expect(countOverlaps(testInput)).toEqual(4)
+    expect(countPartialOverlaps(testInput)).toEqual(4)
   })
 })
