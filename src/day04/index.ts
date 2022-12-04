@@ -1,11 +1,9 @@
 import { readFileSync } from "fs"
 
-function range(start: string, end: string): number[] {
-  var ans = []
-  for (let i = parseInt(start); i <= parseInt(end); i++) {
-    ans.push(i)
-  }
-  return ans
+function range(start: string, stop: string): number[] {
+  return Array.from(Array(parseInt(stop) - parseInt(start) + 1).keys()).map(
+    (x) => x + parseInt(start)
+  )
 }
 
 export function parseInput(val: string): {
