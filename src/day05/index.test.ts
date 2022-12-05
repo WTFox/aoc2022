@@ -1,4 +1,4 @@
-import {crateMover9000} from "."
+import { moveCrates } from "."
 
 describe("day05", () => {
   const testInput = `\
@@ -14,20 +14,20 @@ move 1 from 1 to 2
 `
 
   test("part 1", () => {
-    const map = new Map<number, string[]>([
+    const stacks = new Map<number, string[]>([
       [1, ["Z", "N"]],
       [2, ["M", "C", "D"]],
       [3, ["P"]],
     ])
-    expect(crateMover9000(testInput, map)).toBe("CMZ")
+    expect(moveCrates(testInput, stacks)).toBe("CMZ")
   })
 
   test("part 2", () => {
-    const map = new Map<number, string[]>([
+    const stacks = new Map<number, string[]>([
       [1, ["Z", "N"]],
       [2, ["M", "C", "D"]],
       [3, ["P"]],
     ])
-    expect(crateMover9000(testInput, map, false)).toBe("MCD")
+    expect(moveCrates(testInput, stacks, false)).toBe("MCD")
   })
 })
