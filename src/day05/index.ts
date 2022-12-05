@@ -2,39 +2,17 @@ import { readFileSync } from "fs"
 
 type StackOfStacks = Map<number, string[]>
 
-export function processMany(input: string, map: StackOfStacks): string {
-  input
-    .trim()
-    .split("\n")
-    .forEach((line) => {
-      if (!line.startsWith("move")) {
-        return
-      }
-      const numbers = line.match(/\d+/g)
-      if (numbers && numbers.length === 3) {
-        // @ts-ignore
-        const [qty, from, to] = numbers
-        // @ts-ignore
-        const thingsToMove = map
-          // @ts-ignore
-          .get(parseInt(from))
-          // @ts-ignore
-          .splice(map.get(parseInt(from)).length - qty)
-        // @ts-ignore
-        map.get(parseInt(to)).push(...thingsToMove)
-      }
-    })
-
-  return (
-    Array.from(map.entries())
-      .map((stack) => {
-        return stack[1].pop()
-      })
-      .reduce((acc, val) => acc + (val || ""), "") || ""
-  )
+export function topOfEachStack(stacks: StackOfStacks): string {
+  return Array.from(stacks.values())
+    .map((stack) => stack[stack.length - 1])
+    .join("")
 }
 
-export function process(input: string, map: StackOfStacks): string {
+export function crateMover9000(
+  input: string,
+  map: StackOfStacks,
+  inOrder = true
+): string {
   input
     .trim()
     .split("\n")
@@ -43,26 +21,17 @@ export function process(input: string, map: StackOfStacks): string {
         return
       }
       const numbers = line.match(/\d+/g)
-      if (numbers && numbers.length === 3) {
-        const [qty, from, to] = numbers
-        for (let index = 0; index < parseInt(qty || "0"); index++) {
-          // @ts-ignore
-          const itemToMove = map.get(parseInt(from)).pop()
-          if (itemToMove) {
-            // @ts-ignore
-            map.get(parseInt(to)).push(itemToMove)
-          }
-        }
+      if (!numbers) {
+        return
       }
+      const [qty, from, to] = numbers.map(Number)
+      let thingsToMove = map.get(from || -1)?.splice(-(qty || 0)) || []
+      if (inOrder) {
+        thingsToMove = thingsToMove.reverse()
+      }
+      map.get(to || -1)?.push(...thingsToMove)
     })
-
-  return (
-    Array.from(map.entries())
-      .map((stack) => {
-        return stack[1].pop()
-      })
-      .reduce((acc, val) => acc + (val || ""), "") || ""
-  )
+  return topOfEachStack(map)
 }
 
 export default {
@@ -78,7 +47,7 @@ export default {
       [8, "ZNWGVBRT".split("")],
       [9, "WGDNPL".split("")],
     ])
-    return process(readFileSync("src/day05/input.txt").toString(), map)
+    return crateMover9000(readFileSync("src/day05/input.txt").toString(), map)
   },
   partTwo: () => {
     const map = new Map<number, string[]>([
@@ -92,6 +61,10 @@ export default {
       [8, "ZNWGVBRT".split("")],
       [9, "WGDNPL".split("")],
     ])
-    return processMany(readFileSync("src/day05/input.txt").toString(), map)
+    return crateMover9000(
+      readFileSync("src/day05/input.txt").toString(),
+      map,
+      true
+    )
   },
 }
