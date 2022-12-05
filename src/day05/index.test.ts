@@ -1,4 +1,4 @@
-import { parseStartingPositions } from "."
+import { process, processMany } from "."
 
 describe("day05", () => {
   const testInput = `\
@@ -14,10 +14,20 @@ move 1 from 1 to 2
 `
 
   test("part 1", () => {
-    expect(parseStartingPositions(testInput)).toBe("CMZ")
+    const map = new Map<number, string[]>([
+      [1, ["Z", "N"]],
+      [2, ["M", "C", "D"]],
+      [3, ["P"]],
+    ])
+    expect(process(testInput, map)).toBe("CMZ")
   })
 
   test("part 2", () => {
-    expect(true).toBe(false)
+    const map = new Map<number, string[]>([
+      [1, ["Z", "N"]],
+      [2, ["M", "C", "D"]],
+      [3, ["P"]],
+    ])
+    expect(processMany(testInput, map)).toBe("MCD")
   })
 })
