@@ -1,5 +1,12 @@
 import { readFileSync } from "fs"
 
+function recurseChildren(node: Node, callback: (node: Node) => void) {
+  callback(node)
+  node?.children?.forEach((child) => {
+    recurseChildren(child, callback)
+  })
+}
+
 class Node {
   constructor(
     public name: string,
@@ -13,42 +20,66 @@ class Node {
     this.size = size
   }
 
-  public static iterateTree(node: Node, callback: (node: Node) => void) {
-    callback(node)
-    node?.children?.forEach((child) => {
-      this.iterateTree(child, callback)
-    })
-  }
-
-  get isDir() {
+  public get isDir() {
     return this.children !== undefined
   }
 
-  get directorySize() {
-    if (!this.isDir) {
-      return undefined
-    }
+  public get directorySize() {
     let size = 0
-    Node.iterateTree(this, (node) => {
+    recurseChildren(this, (node) => {
       if (node.size) {
         size += node.size
       }
     })
     return size
   }
+}
 
-  public static pathToNode(node: Node) {
-    let path = ""
-    let current = node
-    while (current) {
-      path = current.name + path
-      if (!current.parent) {
-        break
-      }
-      current = current.parent
-    }
-    return path
+function handleCD(line: string, root: Node, current: Node) {
+  const dir = line.trim().split("$ cd ")[1]?.trim()
+  if (!dir) {
+    throw new Error("Invalid cd command")
   }
+
+  if (dir === "/") {
+    current = root
+  } else if (dir === "..") {
+    current = current.parent || root
+  } else {
+    current = current.children?.find((child) => child.name === dir) || root
+  }
+  return current
+}
+
+function handleLS(
+  lines: string[],
+  index: number,
+  current: Node
+): { current: Node; index: number } {
+  let nextLine = lines[++index]
+  current.children = []
+
+  while (nextLine && !nextLine.startsWith("$") && index < lines.length) {
+    const [filesizeOrDir, name] = nextLine.trim().split(" ", 2)
+    if (!filesizeOrDir || !name) {
+      throw new Error("Invalid ls command: " + nextLine)
+    }
+
+    if (filesizeOrDir === "dir" && name) {
+      current.children.push(new Node(name, current, []))
+    } else if (Number(filesizeOrDir) && name) {
+      current.children.push(
+        new Node(name, current, undefined, Number(filesizeOrDir))
+      )
+    }
+
+    nextLine = lines[index + 1]
+    if (nextLine && nextLine.startsWith("$")) {
+      break
+    }
+    ++index
+  }
+  return { current, index }
 }
 
 export function buildFileSystem(input: string): Node {
@@ -56,57 +87,21 @@ export function buildFileSystem(input: string): Node {
   let current = root
 
   const lines = input.split("\n")
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
+  for (let index = 0; index < lines.length; index++) {
+    const line = lines[index]
 
-    if (!line) {
-      continue
+    if (line?.startsWith("$ cd")) {
+      current = handleCD(line, root, current)
     }
 
-    if (line.startsWith("$ cd")) {
-      const dir = line.trim().split("$ cd ")[1]?.trim()
-      if (!dir) {
-        throw new Error("Invalid cd command")
-      }
-
-      if (dir === "/") {
-        current = root
-      } else if (dir === "..") {
-        current = current.parent || root
-      }
-      const child = current.children?.find((child) => child.name === dir)
-      if (child) {
-        current = child
-      }
-    }
-
-    if (line.startsWith("$ ls")) {
-      let nextLine = lines[++i]
-      current.children = []
-
-      while (nextLine && !nextLine.startsWith("$") && i < lines.length) {
-        const [sizeOrDir, name] = nextLine.trim().split(" ", 2)
-        if (!sizeOrDir || !name) {
-          throw new Error("Invalid ls command: " + nextLine)
-        }
-        if (sizeOrDir === "dir" && name) {
-          const child = new Node(name, current, [])
-          current.children.push(child)
-        } else if (Number.parseInt(sizeOrDir) && name) {
-          const child = new Node(
-            name,
-            current,
-            undefined,
-            Number.parseInt(sizeOrDir)
-          )
-          current.children.push(child)
-        }
-        nextLine = lines[++i]
-        if (nextLine && nextLine.startsWith("$ cd")) {
-          --i
-          break
-        }
-      }
+    if (line?.startsWith("$ ls")) {
+      const { current: newCurrent, index: newIndex } = handleLS(
+        lines,
+        index,
+        current
+      )
+      index = newIndex
+      current = newCurrent
     }
   }
   return root
@@ -117,7 +112,7 @@ export function getSumOfEachDirectoryWithMaxSize(
   maxSize: number
 ): number {
   let sum = 0
-  Node.iterateTree(root, (node) => {
+  recurseChildren(root, (node) => {
     if (node.isDir && node.directorySize) {
       if (node.directorySize < maxSize) {
         sum += node.directorySize
@@ -128,24 +123,15 @@ export function getSumOfEachDirectoryWithMaxSize(
 }
 
 export function findDirectoryToDelete(input: string): number {
-  const totalFSCapacity = 70000000
   const root = buildFileSystem(input)
-  const freeSpace = totalFSCapacity - (root.directorySize || 0)
+
+  const totalFSCapacity = 70000000
   const updateSize = 30000000
+  const freeSpace = totalFSCapacity - (root.directorySize || 0)
   const neededSpace = updateSize - freeSpace
 
-  console.log({
-    ...{
-      fsSize: totalFSCapacity.toLocaleString(),
-      free: freeSpace.toLocaleString(),
-      needed: neededSpace.toLocaleString(),
-      update: updateSize.toLocaleString(),
-    },
-    used: root.directorySize?.toLocaleString(),
-  })
-
   let bestSoFar = Number.MAX_SAFE_INTEGER
-  Node.iterateTree(root, (node) => {
+  recurseChildren(root, (node) => {
     if (node.isDir && node.directorySize) {
       if (node.name !== "/") {
         if (node.directorySize >= neededSpace) {
@@ -162,7 +148,6 @@ export default {
     const root = buildFileSystem(
       readFileSync("src/day07/input.txt", "utf8").toString()
     )
-
     return getSumOfEachDirectoryWithMaxSize(root, 100000)
   },
   partTwo: () => {
