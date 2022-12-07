@@ -1,4 +1,4 @@
-describe("day04", () => {
+describe("day08", () => {
   const testInput = `\
 `.trim()
 
