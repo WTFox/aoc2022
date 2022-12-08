@@ -1,4 +1,4 @@
-import { countTreesVisible } from "."
+import { getVisibleTrees } from "."
 
 describe("day08", () => {
   const testInput = `\
@@ -10,7 +10,7 @@ describe("day08", () => {
   `.trim()
 
   test("part 1", () => {
-    expect(countTreesVisible(testInput)).toBe(21)
+    expect(getVisibleTrees(testInput).length).toBe(21)
   })
 
   // test("part 2", () => {

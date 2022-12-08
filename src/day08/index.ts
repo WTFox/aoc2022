@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { readFileSync } from "fs"
 
 function buildGrid(input: string): number[][] {
@@ -9,54 +8,51 @@ function buildGrid(input: string): number[][] {
   return arr
 }
 
-export function countTreesVisible(input: string): number {
-  const found: number[] = []
+function isTreeVisible(arr: number[], tree: number | undefined): boolean {
+  if (typeof tree === "undefined") return false
+  if (arr.length === 0) {
+    return true
+  }
+  for (const otherTree of arr) {
+    if (otherTree >= tree) {
+      return false
+    }
+  }
+  return true
+}
+
+export function getVisibleTrees(input: string): number[][] {
+  const found: number[][] = []
   const grid = buildGrid(input)
-  let count = 0
+
   for (let rowID = 0; rowID < grid.length; rowID++) {
+    const row = grid[rowID]
+    if (typeof row === "undefined") continue
     for (let colID = 0; colID < grid.length; colID++) {
-      const row = grid[rowID]
-      const col = grid.map((row) => row[colID])
-      const tree = row[colID]
-
-      const leftOfTree = row.slice(0, colID)
-      const rightOfTree = row.slice(colID + 1)
-      const topOfTree = col.slice(0, rowID)
-      const bottomOfTree = col.slice(rowID + 1)
-
-      const isVisible = (arr: number[], tree: number) => {
-        if (arr.length === 0) {
-          // we've reached the edge of the grid
-          return true
-        }
-        for (const otherTree of arr) {
-          if (otherTree >= tree) {
-            return false
-          }
-        }
-        return true
-      }
-
-      const visibleLeft = isVisible(leftOfTree, tree)
-      const visibleRight = isVisible(rightOfTree, tree)
-      const visibleTop = isVisible(topOfTree, tree)
-      const visibleBottom = isVisible(bottomOfTree, tree)
-
-      if (visibleLeft || visibleRight || visibleTop || visibleBottom) {
-        found.push(tree)
-        count++
+      const tree = grid[rowID]?.[colID]
+      const col = grid.map((row) => row[colID] || 0)
+      if (
+        isTreeVisible(row.slice(0, colID), tree) ||
+        isTreeVisible(row.slice(colID + 1), tree) ||
+        isTreeVisible(col.slice(0, rowID), tree) ||
+        isTreeVisible(col.slice(rowID + 1), tree)
+      ) {
+        found.push([rowID, colID])
       }
     }
   }
-  // console.log(found)
-  return count
+  return found
 }
 
 export default {
   partOne: () => {
     const input = readFileSync("src/day08/input.txt", "utf8").toString()
 
-    return countTreesVisible(input)
+    const result = getVisibleTrees(input).length
+    // if (result !== 1816) {
+    //   throw new Error("Test failed")
+    // }
+    return result
   },
   partTwo: () => {
     // const input = readFileSync("src/day04/input.txt", "utf8").toString()
