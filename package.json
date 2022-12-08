@@ -16,7 +16,8 @@
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "lint-and-fix": "eslint . --ext .ts --fix",
-    "test": "jest --coverage --verbose",
+    "test": "jest",
+    "testVerbose": "jest --coverage --verbose",
     "watch-test": "npm run test -- --watchAll",
     "watch": "tsc -w"
   },
