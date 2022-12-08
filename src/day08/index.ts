@@ -3,38 +3,52 @@ import { readFileSync } from "fs"
 
 function buildGrid(input: string): number[][] {
   const arr = []
-  for (const line of input.split("\n")) {
-    arr.push(line.split("").map(Number))
+  for (const line of input.trim().split("\n")) {
+    arr.push(line.trim().split("").map(Number))
   }
   return arr
 }
 
 export function countTreesVisible(input: string): number {
-  // iterate over each row and column, excluding the first and last items
-  // for each item, check if it is greater than the items to the left and right
-  // if it is, check if it is greater than the items above and below
-  // if it is, increment the count
-  let count = 0
   const found: number[] = []
   const grid = buildGrid(input)
+  let count = 0
   for (let rowID = 0; rowID < grid.length; rowID++) {
-    for (let colID = 0; colID < grid[rowID].length; colID++) {
+    for (let colID = 0; colID < grid.length; colID++) {
       const row = grid[rowID]
       const col = grid.map((row) => row[colID])
-      if (
-        [...row.slice(0, colID), ...row.slice(colID + 1)].some(
-          (item) => item >= row[colID]
-        ) ||
-        [...col.slice(0, rowID), ...col.slice(rowID + 1)].some(
-          (item) => item >= col[rowID]
-        )
-      ) {
-        found.push(grid[rowID][colID])
-        ++count
+      const tree = row[colID]
+
+      const leftOfTree = row.slice(0, colID)
+      const rightOfTree = row.slice(colID + 1)
+      const topOfTree = col.slice(0, rowID)
+      const bottomOfTree = col.slice(rowID + 1)
+
+      const isVisible = (arr: number[], tree: number) => {
+        if (arr.length === 0) {
+          // we've reached the edge of the grid
+          return true
+        }
+        for (const otherTree of arr) {
+          if (otherTree >= tree) {
+            return false
+          }
+        }
+        return true
+      }
+
+      const visibleLeft = isVisible(leftOfTree, tree)
+      const visibleRight = isVisible(rightOfTree, tree)
+      const visibleTop = isVisible(topOfTree, tree)
+      const visibleBottom = isVisible(bottomOfTree, tree)
+
+      if (visibleLeft || visibleRight || visibleTop || visibleBottom) {
+        found.push(tree)
+        count++
       }
     }
   }
-  console.log(found)
+  // console.log(found)
   return count
 }
 
