@@ -1,4 +1,9 @@
-import { getVisibleTrees } from "."
+import {
+  buildGrid,
+  getHighestViewingScore,
+  getVisibleTrees,
+  viewScore,
+} from "."
 
 describe("day08", () => {
   const testInput = `\
@@ -13,7 +18,9 @@ describe("day08", () => {
     expect(getVisibleTrees(testInput).length).toBe(21)
   })
 
-  // test("part 2", () => {
-  //   expect(true).toBe(false)
-  // })
+  test("part 2", () => {
+    expect(viewScore(1, 2, buildGrid(testInput))).toBe(4)
+    expect(viewScore(3, 2, buildGrid(testInput))).toBe(8)
+    expect(getHighestViewingScore(testInput)).toBe(8)
+  })
 })
