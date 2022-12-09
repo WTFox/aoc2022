@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { readFileSync } from "fs"
 
 export function buildGrid(input: string): number[][] {
@@ -53,7 +52,10 @@ export function getVisibleTrees(input: string): number[][] {
   return found
 }
 
-function countTree(startingTree: number, direction: number[]): number {
+function countTree(
+  startingTree: number,
+  direction: (number | undefined)[]
+): number {
   let score = 0
   for (const tree of direction) {
     ++score
@@ -82,11 +84,11 @@ export function viewScore(
   const left = row.slice(0, colId).reverse()
   const right = row.slice(colId + 1)
 
-  const scores: number[] = []
-  for (const direction of [above, below, left, right]) {
-    scores.push(countTree(startingTree, direction))
-  }
-  return scores[0] * scores[1] * scores[2] * scores[3]
+  return [above, below, left, right]
+    .map((direction) => {
+      return countTree(startingTree, direction)
+    })
+    .reduce((a, b) => a * b, 1)
 }
 
 export function getHighestViewingScore(input: string): number {
@@ -101,12 +103,7 @@ export function getHighestViewingScore(input: string): number {
 export default {
   partOne: () => {
     const input = readFileSync("src/day08/input.txt", "utf8").toString()
-
-    const result = getVisibleTrees(input).length
-    if (result !== 1816) {
-      throw new Error("Test failed")
-    }
-    return result
+    return getVisibleTrees(input).length
   },
   partTwo: () => {
     const input = readFileSync("src/day08/input.txt", "utf8").toString()
