@@ -89,12 +89,10 @@ export function viewScore(
   return scores[0] * scores[1] * scores[2] * scores[3]
 }
 
-export function getHighestViewingScore(
-  trees: number[][],
-  grid: number[][]
-): number {
+export function getHighestViewingScore(input: string): number {
+  const grid = buildGrid(input)
   let bestSoFar = 0
-  iterGrid(buildGrid(input), (rowID: number, colID: number) => {
+  iterGrid(grid, (rowID: number, colID: number) => {
     bestSoFar = Math.max(viewScore(rowID, colID, grid), bestSoFar)
   })
   return bestSoFar
@@ -111,10 +109,7 @@ export default {
     return result
   },
   partTwo: () => {
-    const input = readFileSync("src/day04/input.txt", "utf8").toString()
-    const trees = getVisibleTrees(input)
-    const grid = buildGrid(input)
-
-    return getHighestViewingScore(trees, grid)
+    const input = readFileSync("src/day08/input.txt", "utf8").toString()
+    return getHighestViewingScore(input)
   },
 }
