@@ -49,8 +49,6 @@ export class Mover {
     if (a.x === b.x && a.y === b.y) {
       return true
     }
-
-    // check if b is in a's surrounding 9 squares
     const x = a.x
     const y = a.y
     const x1 = b.x
@@ -91,28 +89,16 @@ export function doTheMoves(input: string): number {
       if (!direction || !amount) {
         throw new Error("Oh no")
       }
+
       const amt = parseInt(amount.trim())
       const dir = Directions.get(
         direction.trim().toUpperCase() as "U" | "R" | "D" | "L"
       ) as Point
 
-      if (!dir) {
-        throw new Error("No dir parsed")
-      }
-
-      console.log("Line: ", line)
       for (let index = 0; index < amt; index++) {
-        console.log("Moving from: ")
-        console.log({ H: H.currentPosition })
-
         H.moveDirection(dir)
 
-        console.log("To: ")
-        console.log({ H: H.currentPosition })
-        console.log(" ")
-
         if (!Mover.isTouching(T.currentPosition, H.currentPosition)) {
-          console.log("Not touching")
           const distance = distanceBetweenPoints(
             H.currentPosition,
             T.currentPosition
@@ -127,12 +113,8 @@ export function doTheMoves(input: string): number {
             T.moveDirection(dir)
           }
         }
-        console.log("T: ", T.currentPosition)
-        console.log(" ")
       }
-      console.log(" --- \n")
     })
-  console.log({ tHist: new Set(T.history) })
   return new Set(T.history).size
 }
 
