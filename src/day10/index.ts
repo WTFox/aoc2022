@@ -3,7 +3,6 @@ import * as path from "path"
 
 class CRT {
   public static width = 40
-
   private _buffer: string[]
 
   constructor() {
@@ -15,13 +14,13 @@ class CRT {
   }
 
   public render(): string {
-    const display =
+    return (
       this._buffer
         .slice(0, -1)
         .join("")
         .match(/.{1,40}/g)
         ?.join("\n") || ""
-    return display
+    )
   }
 }
 
@@ -51,37 +50,17 @@ export function processCPUQueue(input: string) {
 }
 
 export function writeToCRT(input: string) {
-  const CYCLES = [20, 60, 100, 140, 180, 220]
   let X = 1
-  const valuesToSum: number[] = []
-
-  let buffer: string[] = []
   let crt = new CRT()
-  console.log(crt)
-
   buildCPUQueue(input.trim().split("\n")).forEach((val, idx) => {
-    if (CYCLES.includes(idx)) {
-      valuesToSum.push(X * idx)
-    }
     X += val
-
     let displayValue = "."
     if ([X - 1, X, X + 1].includes(idx % 40)) {
       displayValue = "#"
     }
-    buffer.push(displayValue)
+    crt.write(displayValue)
   })
-
-  const display =
-    buffer
-      .slice(0, -1)
-      .join("")
-      .match(/.{1,40}/g)
-      ?.join("\n") || ""
-
-  console.log(display)
-
-  return display
+  return crt.render()
 }
 
 export default {
