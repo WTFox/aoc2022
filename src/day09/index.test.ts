@@ -80,8 +80,8 @@ describe("day09", () => {
   })
 
   test("part 1", () => {
-    expect(doTheMoves(testInput)).toBe(13)
-    expect(doTheMoves(testInput,10)).toBe(1)
+    expect(doTheMoves(testInput, 2)).toBe(13)
+    expect(doTheMoves(testInput, 10)).toBe(1)
   })
 
   test("part 2", () => {
@@ -95,6 +95,6 @@ D 10
 L 25
 U 20
 `.trim()
-    expect(doTheMoves(testInput2, 9)).toBe(36)
+    expect(doTheMoves(testInput2, 10)).toBe(36)
   })
 })

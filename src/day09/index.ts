@@ -88,12 +88,12 @@ function returnOppositeMove(d: Point) {
   return Directions.get("R") as Point
 }
 
-export function doTheMoves(input: string, numKnots = 1): number {
+export function doTheMoves(input: string, numKnots: number): number {
   const head = new Knot("HEAD")
   const knots: Knot[] = []
 
   let lastKnot = head
-  for (let i = 0; i < numKnots; i++) {
+  for (let i = 0; i < numKnots - 1; i++) {
     const knot = new Knot(String(i), lastKnot)
     knots.push(knot)
     lastKnot = knot
@@ -135,26 +135,60 @@ export function doTheMoves(input: string, numKnots = 1): number {
                 y: knot.parent.currentPosition.y + returnOppositeMove(dir).y,
               })
             } else {
-              // const lastLocationFromParent = knot.parent.history.slice(
-              //   -1
-              // )[0] as string
-              // const [x, y] = lastLocationFromParent.split(",").map(Number)
-              // knot.setLocation({ x, y } as Point)
-              knot.moveDirection(dir)
+              const lastLocationFromParent = knot.parent.history.slice(
+                -2
+              )[0] as string
+              const [x, y] = lastLocationFromParent.split(",").map(Number)
+              knot.setLocation({ x, y } as Point)
             }
           }
         }
       }
     })
-  return new Set([...(knots.slice(-1)[0] as Knot).history]).size
+  console.log(
+    plotPointsOnAsciiGrid(
+      lastKnot.history.map((h) => {
+        const [x, y] = h.split(",").map(Number)
+        return { x, y } as Point
+      })
+    )
+  )
+  return new Set([...lastKnot.history]).size
+}
+
+export function plotPointsOnAsciiGrid(points: Point[]): string {
+  const minX = Math.min(...points.map((p) => p.x))
+  const maxX = Math.max(...points.map((p) => p.x)) + 1
+  const minY = Math.min(...points.map((p) => p.y))
+  const maxY = Math.max(...points.map((p) => p.y))
+
+  const grid: string[][] = []
+  for (let y = minY; y <= maxY; y++) {
+    grid.push([])
+    for (let x = minX; x <= maxX; x++) {
+      // @ts-ignore
+      grid[y - minY].push(".")
+    }
+  }
+
+  for (const point of points) {
+    // @ts-ignore
+    grid[point.y - minY][point.x - minX] = "#"
+  }
+
+  return grid
+    .reverse()
+    .map((row) => row.join(""))
+    .join("\n")
 }
 
 export default {
   partOne: () => {
     const input = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8")
-    return doTheMoves(input)
+    return doTheMoves(input, 2)
   },
   partTwo: () => {
-    return
+    const input = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8")
+    return doTheMoves(input, 10)
   },
 }
