@@ -16,7 +16,8 @@ export const Directions: Map<"U" | "R" | "D" | "L", Point> = new Map([
 export class Mover {
   public history: string[]
 
-  constructor() {
+  constructor(public parent?: Mover) {
+    this.parent = parent
     this.history = ["0,0"]
   }
 
@@ -45,19 +46,25 @@ export class Mover {
     this.history.push(`${newLocation.x},${newLocation.y}`)
   }
 
-  public static isTouching(a: Point, b: Point) {
-    if (a.x === b.x && a.y === b.y) {
-      return true
-    }
-    const x = a.x
-    const y = a.y
-    const x1 = b.x
-    const y1 = b.y
-    if (x1 >= x - 1 && x1 <= x + 1 && y1 >= y - 1 && y1 <= y + 1) {
-      return true
-    }
-    return false
+  public isTouchingParent() {
+    const a = this.currentPosition
+    const b = this.parent?.currentPosition as Point
+    return arePointsTouching(a, b)
   }
+}
+
+export function arePointsTouching(a: Point, b: Point) {
+  if (a.x === b.x && a.y === b.y) {
+    return true
+  }
+  const x = a.x
+  const y = a.y
+  const x1 = b.x
+  const y1 = b.y
+  if (x1 >= x - 1 && x1 <= x + 1 && y1 >= y - 1 && y1 <= y + 1) {
+    return true
+  }
+  return false
 }
 
 export function distanceBetweenPoints(a: Point, b: Point) {
@@ -78,8 +85,8 @@ function returnOppositeMove(d: Point) {
 }
 
 export function doTheMoves(input: string): number {
-  const H = new Mover()
-  const T = new Mover()
+  const head = new Mover()
+  const knot = new Mover(head)
 
   input
     .trim()
@@ -96,26 +103,26 @@ export function doTheMoves(input: string): number {
       ) as Point
 
       for (let index = 0; index < amt; index++) {
-        H.moveDirection(dir)
+        head.moveDirection(dir)
 
-        if (!Mover.isTouching(T.currentPosition, H.currentPosition)) {
+        if (!knot.isTouchingParent()) {
           const distance = distanceBetweenPoints(
-            H.currentPosition,
-            T.currentPosition
+            head.currentPosition,
+            knot.currentPosition
           )
           if (distance > 2) {
             const newLocation = {
-              x: H.currentPosition.x + returnOppositeMove(dir).x,
-              y: H.currentPosition.y + returnOppositeMove(dir).y,
+              x: head.currentPosition.x + returnOppositeMove(dir).x,
+              y: head.currentPosition.y + returnOppositeMove(dir).y,
             }
-            T.setLocation(newLocation)
+            knot.setLocation(newLocation)
           } else {
-            T.moveDirection(dir)
+            knot.moveDirection(dir)
           }
         }
       }
     })
-  return new Set(T.history).size
+  return new Set(knot.history).size
 }
 
 export default {

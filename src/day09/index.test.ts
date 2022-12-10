@@ -1,4 +1,11 @@
-import { Directions, distanceBetweenPoints, doTheMoves, Mover, Point } from "."
+import {
+  arePointsTouching,
+  Directions,
+  distanceBetweenPoints,
+  doTheMoves,
+  Mover,
+  Point,
+} from "."
 
 describe("day09", () => {
   const testInput = `\
@@ -50,13 +57,13 @@ describe("day09", () => {
   })
 
   test("isTouching", () => {
-    expect(Mover.isTouching({ x: 0, y: 0 }, { x: 0, y: 0 })).toBe(true)
-    expect(Mover.isTouching({ x: 0, y: 0 }, { x: 0, y: 1 })).toBe(true)
-    expect(Mover.isTouching({ x: 0, y: 0 }, { x: 1, y: 0 })).toBe(true)
-    expect(Mover.isTouching({ x: 0, y: 0 }, { x: 0, y: -1 })).toBe(true)
-    expect(Mover.isTouching({ x: 0, y: 0 }, { x: -1, y: 0 })).toBe(true)
-    expect(Mover.isTouching({ x: 0, y: 0 }, { x: 1, y: 2 })).toBe(false)
-    expect(Mover.isTouching({ x: 4, y: 1 }, { x: 3, y: 0 })).toBe(true)
+    expect(arePointsTouching({ x: 0, y: 0 }, { x: 0, y: 0 })).toBe(true)
+    expect(arePointsTouching({ x: 0, y: 0 }, { x: 0, y: 1 })).toBe(true)
+    expect(arePointsTouching({ x: 0, y: 0 }, { x: 1, y: 0 })).toBe(true)
+    expect(arePointsTouching({ x: 0, y: 0 }, { x: 0, y: -1 })).toBe(true)
+    expect(arePointsTouching({ x: 0, y: 0 }, { x: -1, y: 0 })).toBe(true)
+    expect(arePointsTouching({ x: 0, y: 0 }, { x: 1, y: 2 })).toBe(false)
+    expect(arePointsTouching({ x: 4, y: 1 }, { x: 3, y: 0 })).toBe(true)
   })
 
   test("distanceBetweenPoints", () => {
