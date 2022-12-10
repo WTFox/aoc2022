@@ -88,7 +88,7 @@ function returnOppositeMove(d: Point) {
   return Directions.get("R") as Point
 }
 
-export function doTheMoves(input: string, numKnots: number = 1): number {
+export function doTheMoves(input: string, numKnots = 1): number {
   const head = new Knot("HEAD")
   const knots: Knot[] = []
 
@@ -103,7 +103,7 @@ export function doTheMoves(input: string, numKnots: number = 1): number {
     .trim()
     .split("\n")
     .forEach((line) => {
-      let [direction, amount] = line.trim().split(" ")
+      const [direction, amount] = line.trim().split(" ")
       if (!direction || !amount) {
         throw new Error("Oh no")
       }
@@ -118,7 +118,7 @@ export function doTheMoves(input: string, numKnots: number = 1): number {
         head.moveDirection(dir)
 
         // move the other knots, in order
-        for (const knot of knots.sort((a, b) => a.name.localeCompare(b.name))) {
+        for (const knot of knots) {
           if (knot.isTouchingParent()) {
             continue
           }
@@ -128,7 +128,7 @@ export function doTheMoves(input: string, numKnots: number = 1): number {
           }
 
           const distance = distanceBetweenPoints(
-            knot.parent.currentPosition as Point,
+            knot.parent.currentPosition,
             knot.currentPosition
           )
           if (distance > 2) {
@@ -139,14 +139,15 @@ export function doTheMoves(input: string, numKnots: number = 1): number {
             })
           } else {
             // move regularly
-            knot.moveDirection(dir)
+            const lastLocationFromParent = knot.parent.history.slice(
+              -1
+            )[0] as string
+            const [x, y] = lastLocationFromParent.split(",").map(Number)
+            knot.setLocation({ x, y } as Point)
           }
         }
       }
     })
-  /* return new Set([...(knots.slice(-1)[0] as Knot).history]).size */
-
-  // return unique points in the history of the last knot
   return new Set([...(knots.slice(-1)[0] as Knot).history]).size
 }
 
