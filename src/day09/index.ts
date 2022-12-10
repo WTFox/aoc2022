@@ -145,14 +145,14 @@ export function doTheMoves(input: string, numKnots: number): number {
         }
       }
     })
-  console.log(
-    plotPointsOnAsciiGrid(
-      lastKnot.history.map((h) => {
-        const [x, y] = h.split(",").map(Number)
-        return { x, y } as Point
-      })
-    )
-  )
+  /* console.log( */
+  /*   plotPointsOnAsciiGrid( */
+  /*     lastKnot.history.map((h) => { */
+  /*       const [x, y] = h.split(",").map(Number) */
+  /*       return { x, y } as Point */
+  /*     }) */
+  /*   ) */
+  /* ) */
   return new Set([...lastKnot.history]).size
 }
 
