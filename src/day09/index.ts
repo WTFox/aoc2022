@@ -119,31 +119,29 @@ export function doTheMoves(input: string, numKnots = 1): number {
 
         // move the other knots, in order
         for (const knot of knots) {
-          if (knot.isTouchingParent()) {
-            continue
-          }
+          if (!knot.isTouchingParent()) {
+            if (!knot.parent) {
+              throw new Error("WHY")
+            }
 
-          if (!knot.parent) {
-            throw new Error("WHY")
-          }
-
-          const distance = distanceBetweenPoints(
-            knot.parent.currentPosition,
-            knot.currentPosition
-          )
-          if (distance > 2) {
-            // too far away, adjust
-            knot.setLocation({
-              x: knot.parent.currentPosition.x + returnOppositeMove(dir).x,
-              y: knot.parent.currentPosition.y + returnOppositeMove(dir).y,
-            })
-          } else {
-            // move regularly
-            const lastLocationFromParent = knot.parent.history.slice(
-              -1
-            )[0] as string
-            const [x, y] = lastLocationFromParent.split(",").map(Number)
-            knot.setLocation({ x, y } as Point)
+            const distance = distanceBetweenPoints(
+              head.currentPosition,
+              knot.currentPosition
+            )
+            if (distance === 3) {
+              // too far away, adjust
+              knot.setLocation({
+                x: knot.parent.currentPosition.x + returnOppositeMove(dir).x,
+                y: knot.parent.currentPosition.y + returnOppositeMove(dir).y,
+              })
+            } else {
+              // const lastLocationFromParent = knot.parent.history.slice(
+              //   -1
+              // )[0] as string
+              // const [x, y] = lastLocationFromParent.split(",").map(Number)
+              // knot.setLocation({ x, y } as Point)
+              knot.moveDirection(dir)
+            }
           }
         }
       }
