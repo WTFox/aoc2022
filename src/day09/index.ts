@@ -13,10 +13,11 @@ export const Directions: Map<"U" | "R" | "D" | "L", Point> = new Map([
   ["L", { x: -1, y: 0 }],
 ])
 
-export class Mover {
+export class Knot {
   public history: string[]
 
-  constructor(public parent?: Mover) {
+  constructor(public name: string, public parent?: Knot) {
+    this.name = name
     this.parent = parent
     this.history = ["0,0"]
   }
@@ -47,8 +48,11 @@ export class Mover {
   }
 
   public isTouchingParent() {
+    if (!this.parent) {
+      throw new Error("Where's my daddy?")
+    }
     const a = this.currentPosition
-    const b = this.parent?.currentPosition as Point
+    const b = this.parent.currentPosition as Point
     return arePointsTouching(a, b)
   }
 }
@@ -84,9 +88,16 @@ function returnOppositeMove(d: Point) {
   return Directions.get("R") as Point
 }
 
-export function doTheMoves(input: string): number {
-  const head = new Mover()
-  const knots = [new Mover(head)]
+export function doTheMoves(input: string, numKnots: number = 1): number {
+  const head = new Knot("HEAD")
+  const knots: Knot[] = []
+
+  let lastKnot = head
+  for (let i = 0; i < numKnots; i++) {
+    const knot = new Knot(String(i), lastKnot)
+    knots.push(knot)
+    lastKnot = knot
+  }
 
   input
     .trim()
@@ -102,31 +113,41 @@ export function doTheMoves(input: string): number {
         direction.trim().toUpperCase() as "U" | "R" | "D" | "L"
       ) as Point
 
+      // move the head by the specified amount
       for (let index = 0; index < amt; index++) {
         head.moveDirection(dir)
 
-        for (const knot of knots) {
-          if (!knot.isTouchingParent()) {
-            const distance = distanceBetweenPoints(
-              head.currentPosition,
-              knot.currentPosition
-            )
-            if (distance > 2) {
-              const newLocation = {
-                x: head.currentPosition.x + returnOppositeMove(dir).x,
-                y: head.currentPosition.y + returnOppositeMove(dir).y,
-              }
-              knot.setLocation(newLocation)
-            } else {
-              knot.moveDirection(dir)
-            }
+        // move the other knots, in order
+        for (const knot of knots.sort((a, b) => a.name.localeCompare(b.name))) {
+          if (knot.isTouchingParent()) {
+            continue
+          }
+
+          if (!knot.parent) {
+            throw new Error("WHY")
+          }
+
+          const distance = distanceBetweenPoints(
+            knot.parent.currentPosition as Point,
+            knot.currentPosition
+          )
+          if (distance > 2) {
+            // too far away, adjust
+            knot.setLocation({
+              x: knot.parent.currentPosition.x + returnOppositeMove(dir).x,
+              y: knot.parent.currentPosition.y + returnOppositeMove(dir).y,
+            })
+          } else {
+            // move regularly
+            knot.moveDirection(dir)
           }
         }
       }
     })
-  return knots.reduce((acc, knot) => {
-    return acc + new Set([...knot.history]).size
-  }, 0)
+  /* return new Set([...(knots.slice(-1)[0] as Knot).history]).size */
+
+  // return unique points in the history of the last knot
+  return new Set([...(knots.slice(-1)[0] as Knot).history]).size
 }
 
 export default {

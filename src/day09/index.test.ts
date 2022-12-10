@@ -3,7 +3,7 @@ import {
   Directions,
   distanceBetweenPoints,
   doTheMoves,
-  Mover,
+  Knot,
   Point,
 } from "."
 
@@ -20,27 +20,27 @@ describe("day09", () => {
   `.trim()
 
   test("moving once", () => {
-    let m = new Mover()
+    let m = new Knot("head")
     expect(m.currentPosition).toEqual({ x: 0, y: 0 })
 
     m.moveDirection(Directions.get("U") as Point)
     expect(m.currentPosition).toEqual({ x: 0, y: 1 })
 
-    m = new Mover()
+    m = new Knot("head")
     m.moveDirection(Directions.get("D") as Point)
     expect(m.currentPosition).toEqual({ x: 0, y: -1 })
 
-    m = new Mover()
+    m = new Knot("head")
     m.moveDirection(Directions.get("L") as Point)
     expect(m.currentPosition).toEqual({ x: -1, y: 0 })
 
-    m = new Mover()
+    m = new Knot("head")
     m.moveDirection(Directions.get("R") as Point)
     expect(m.currentPosition).toEqual({ x: 1, y: 0 })
   })
 
   test("moving multiple", () => {
-    const m = new Mover()
+    let m = new Knot("head")
     expect(m.currentPosition).toEqual({ x: 0, y: 0 })
 
     m.moveDirection(Directions.get("R") as Point)
@@ -81,5 +81,19 @@ describe("day09", () => {
 
   test("part 1", () => {
     expect(doTheMoves(testInput)).toBe(13)
+  })
+
+  test("part 2", () => {
+    const testInput2 = `\
+R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20
+`.trim()
+    expect(doTheMoves(testInput2, 9)).toBe(36)
   })
 })
