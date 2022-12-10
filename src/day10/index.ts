@@ -16,13 +16,30 @@ export function process(input: string) {
   const CYCLES = [20, 60, 100, 140, 180, 220]
   let X = 1
   const valuesToSum: number[] = []
+
+  let buffer: string[] = []
+
   queue.forEach((val, idx) => {
     if (CYCLES.includes(idx)) {
       valuesToSum.push(X * idx)
     }
-
     X += val
+
+    let displayValue = "."
+    if ([X - 1, X, X + 1].includes(idx % 40)) {
+      displayValue = "#"
+    }
+    buffer.push(displayValue)
   })
+
+  const display =
+    buffer
+      .join("")
+      .match(/.{1,40}/g)
+      ?.join("\n") || ""
+
+  console.log(display)
+
   return valuesToSum.reduce((acc, val) => (acc += val), 0)
 }
 
@@ -32,6 +49,7 @@ export default {
     return process(input)
   },
   partTwo: () => {
-    return "TODO"
+    const input = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8")
+    return process(input)
   },
 }
