@@ -1,4 +1,4 @@
-import { process } from "."
+import { processCPUQueue, writeToCRT } from "."
 
 describe("day10", () => {
   const testInput = `\
@@ -151,6 +151,19 @@ noop
 `.trim()
 
   test("part 1", () => {
-    expect(process(testInput)).toEqual(13140)
+    expect(processCPUQueue(testInput)).toEqual(13140)
+  })
+
+  test("part 2", () => {
+    const got = writeToCRT(testInput)
+    const wanted = `\
+##..##..##..##..##..##..##..##..##..##..
+###...###...###...###...###...###...###.
+####....####....####....####....####....
+#####.....#####.....#####.....#####.....
+######......######......######......####
+#######.......#######.......#######.....`.trim()
+
+    expect(got).toEqual(wanted)
   })
 })
