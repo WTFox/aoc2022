@@ -86,7 +86,7 @@ function returnOppositeMove(d: Point) {
 
 export function doTheMoves(input: string): number {
   const head = new Mover()
-  const knot = new Mover(head)
+  const knots = [new Mover(head)]
 
   input
     .trim()
@@ -105,24 +105,28 @@ export function doTheMoves(input: string): number {
       for (let index = 0; index < amt; index++) {
         head.moveDirection(dir)
 
-        if (!knot.isTouchingParent()) {
-          const distance = distanceBetweenPoints(
-            head.currentPosition,
-            knot.currentPosition
-          )
-          if (distance > 2) {
-            const newLocation = {
-              x: head.currentPosition.x + returnOppositeMove(dir).x,
-              y: head.currentPosition.y + returnOppositeMove(dir).y,
+        for (const knot of knots) {
+          if (!knot.isTouchingParent()) {
+            const distance = distanceBetweenPoints(
+              head.currentPosition,
+              knot.currentPosition
+            )
+            if (distance > 2) {
+              const newLocation = {
+                x: head.currentPosition.x + returnOppositeMove(dir).x,
+                y: head.currentPosition.y + returnOppositeMove(dir).y,
+              }
+              knot.setLocation(newLocation)
+            } else {
+              knot.moveDirection(dir)
             }
-            knot.setLocation(newLocation)
-          } else {
-            knot.moveDirection(dir)
           }
         }
       }
     })
-  return new Set(knot.history).size
+  return knots.reduce((acc, knot) => {
+    return acc + new Set([...knot.history]).size
+  }, 0)
 }
 
 export default {
