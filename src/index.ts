@@ -8,6 +8,7 @@ import day07 from "./day07"
 import day08 from "./day08"
 import day09 from "./day09"
 import day10 from "./day10"
+import day11 from "./day11"
 
 console.table([
   { day: 1, partOne: day01.partOne(), partTwo: day01.partTwo() },
@@ -20,4 +21,5 @@ console.table([
   { day: 8, partOne: day08.partOne(), partTwo: day08.partTwo() },
   { day: 9, partOne: day09.partOne(), partTwo: day09.partTwo() },
   { day: 10, partOne: day10.partOne(), partTwo: day10.partTwo() },
+  { day: 11, partOne: day11.partOne(), partTwo: day11.partTwo() },
 ])
