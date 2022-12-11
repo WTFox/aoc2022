@@ -25,7 +25,7 @@ class CRT {
 }
 
 export function buildCPUQueue(instructions: string[]): number[] {
-  let queue: number[] = [0]
+  const queue: number[] = [0]
   instructions.forEach((val) => {
     const [op, arg] = val.trim().split(" ")
     if (op === "noop") {
@@ -51,7 +51,7 @@ export function processCPUQueue(input: string) {
 
 export function writeToCRT(input: string) {
   let X = 1
-  let crt = new CRT()
+  const crt = new CRT()
   buildCPUQueue(input.trim().split("\n")).forEach((val, idx) => {
     X += val
     let displayValue = "."
@@ -70,6 +70,7 @@ export default {
   },
   partTwo: () => {
     const input = fs.readFileSync(path.join(__dirname, "input.txt"), "utf8")
-    return writeToCRT(input)
+    writeToCRT(input)
+    return "see index.ts"
   },
 }
