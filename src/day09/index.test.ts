@@ -40,7 +40,7 @@ describe("day09", () => {
   })
 
   test("moving multiple", () => {
-    let m = new Knot("head")
+    const m = new Knot("head")
     expect(m.currentPosition).toEqual({ x: 0, y: 0 })
 
     m.moveDirection(Directions.get("R") as Point)
